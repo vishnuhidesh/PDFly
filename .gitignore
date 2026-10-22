@@ -1,0 +1,66 @@
+# ==========================================
+# PDFly (Django) .gitignore
+# ==========================================
+
+# Uploaded, processed, and thumbnail files
+media/uploads/*
+media/processed/*
+media/thumbnails/*
+media/*
+!media/uploads/.gitkeep
+!media/processed/.gitkeep
+!media/thumbnails/.gitkeep
+!media/.gitkeep
+
+# Test samples & temporary output
+samples/
+*.pdf
+*.txt
+*.zip
+!static/
+
+# SQLite database
+*.sqlite3
+db.sqlite3
+db.sqlite3-journal
+
+# Byte-compiled / optimized / Python caches
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Environment variables & secrets
+.env
+.env.*
+!.env.example
+
+# IDEs & code editors
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+*~
+
+# Operating system files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log

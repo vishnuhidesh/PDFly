@@ -1,0 +1,373 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ tool.title }} - PDFly{% endblock %}
+{% block meta_desc %}{{ tool.desc }}{% endblock %}
+
+{% block content %}
+<div class="container workspace-wrapper">
+  <!-- Breadcrumb -->
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <a href="{% url 'pdfapp:index' %}">Home</a>
+    <span>/</span>
+    <span style="color: var(--text-primary); font-weight: 600;">{{ tool.title }}</span>
+  </nav>
+
+  <!-- Tool Header -->
+  <div class="tool-header">
+    {% if tool.badge %}
+      <span class="tool-header-badge">{{ tool.badge }}</span>
+    {% endif %}
+    <h1 class="tool-header-title">{{ tool.title }}</h1>
+    <p class="tool-header-desc">{{ tool.desc }}</p>
+  </div>
+
+  <!-- Upload Dropzone -->
+  <div class="dropzone-container" id="dropzoneContainer">
+    <div class="dropzone" id="dropzone">
+      <input type="file" id="fileInput" accept="{{ tool.accept }}" {% if tool.multiple %}multiple{% endif %} style="display: none;">
+      
+      <div class="dropzone-icon-box">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="17 8 12 3 7 8"></polyline>
+          <line x1="12" y1="3" x2="12" y2="15"></line>
+        </svg>
+      </div>
+
+      <button type="button" class="btn-upload">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        {% if tool.slug == 'jpg-to-pdf' %}Select images{% else %}Select PDF files{% endif %}
+      </button>
+
+      <p class="dropzone-hint">
+        {% if tool.multiple %}or drop PDFs / files here (supports multi-selection){% else %}or drag & drop your PDF file here{% endif %}
+      </p>
+    </div>
+  </div>
+
+  <!-- Active File Workspace -->
+  <div class="file-workspace" id="fileWorkspace">
+    <div class="workspace-topbar">
+      <div class="workspace-file-info">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--brand-primary);"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+        <span id="workspaceFileName">Selected File</span>
+      </div>
+
+      <div style="display: flex; gap: 0.5rem; align-items: center;">
+        {% if tool.multiple %}
+        <button type="button" class="btn-secondary" id="addMoreBtn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          Add More
+        </button>
+        {% endif %}
+        <button type="button" class="btn-secondary" onclick="window.toolInstance.resetTool()" title="Choose another file">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 2v6h6M21.5 22v-6h-6"/><path d="M22 11.5A10 10 0 0 0 3.2 7.2M2 12.5a10 10 0 0 0 18.8 4.2"/></svg>
+          Change
+        </button>
+      </div>
+    </div>
+
+    <div class="workspace-body">
+      <!-- Preview Stage -->
+      <div class="preview-stage" id="previewStage">
+        <!-- Injected via JavaScript -->
+      </div>
+
+      <!-- Tool Options Sidebar -->
+      <div class="options-panel">
+        <h3 class="options-title">{{ tool.title }} Settings</h3>
+
+        <form id="optionsForm" onsubmit="event.preventDefault();">
+          {% if tool.slug == 'merge-pdf' %}
+            <div class="form-group">
+              <span class="form-label">File Arrangement</span>
+              <p class="form-hint">Use the arrows or drag files up and down to change the order in which they will be merged.</p>
+            </div>
+
+          {% elif tool.slug == 'split-pdf' %}
+            <div class="form-group">
+              <span class="form-label">Split Mode</span>
+              <div class="segment-group">
+                <label class="segment-option selected">
+                  <input type="radio" name="mode" value="range" checked class="segment-radio" onchange="toggleSplitInput(this.value)">
+                  <div>
+                    <div class="segment-text-title">Custom Range</div>
+                    <div class="segment-text-desc">Extract specific pages or page ranges.</div>
+                  </div>
+                </label>
+                <label class="segment-option">
+                  <input type="radio" name="mode" value="extract_all" class="segment-radio" onchange="toggleSplitInput(this.value)">
+                  <div>
+                    <div class="segment-text-title">Extract All Pages</div>
+                    <div class="segment-text-desc">Convert every page into its own PDF file (ZIP).</div>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <div class="form-group" id="rangeInputGroup">
+              <label for="splitRange" class="form-label">Pages to Extract</label>
+              <input type="text" id="splitRange" name="range" class="form-input" value="1" placeholder="e.g. 1-3, 5, 8-10">
+              <span class="form-hint">Comma-separated page numbers or ranges.</span>
+            </div>
+
+          {% elif tool.slug == 'compress-pdf' %}
+            <div class="form-group">
+              <span class="form-label">Compression Level</span>
+              <div class="segment-group">
+                <label class="segment-option">
+                  <input type="radio" name="level" value="extreme" class="segment-radio">
+                  <div>
+                    <div class="segment-text-title">Extreme Compression</div>
+                    <div class="segment-text-desc">Maximum file size reduction, reduced image resolution.</div>
+                  </div>
+                </label>
+                <label class="segment-option selected">
+                  <input type="radio" name="level" value="recommended" checked class="segment-radio">
+                  <div>
+                    <div class="segment-text-title">Recommended Compression</div>
+                    <div class="segment-text-desc">Optimal balance between high quality and small file size.</div>
+                  </div>
+                </label>
+                <label class="segment-option">
+                  <input type="radio" name="level" value="light" class="segment-radio">
+                  <div>
+                    <div class="segment-text-title">Less Compression</div>
+                    <div class="segment-text-desc">High quality maintained with light stream optimization.</div>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+          {% elif tool.slug == 'organize-pdf' %}
+            <div class="form-group">
+              <span class="form-label">Page Management</span>
+              <p class="form-hint">Drag any page card to rearrange page order. Click the rotate icon to turn 90°, or the trash icon to exclude unwanted pages.</p>
+            </div>
+
+          {% elif tool.slug == 'pdf-to-jpg' %}
+            <div class="form-group">
+              <label for="imgFormat" class="form-label">Output Image Format</label>
+              <select id="imgFormat" name="format" class="form-select">
+                <option value="jpg" selected>JPG (Standard, smaller size)</option>
+                <option value="png">PNG (Lossless, crystal clear)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="imgDpi" class="form-label">Resolution / DPI</label>
+              <select id="imgDpi" name="dpi" class="form-select">
+                <option value="150" selected>150 DPI (Optimal web & screen)</option>
+                <option value="300">300 DPI (High definition / Print)</option>
+              </select>
+            </div>
+
+          {% elif tool.slug == 'jpg-to-pdf' %}
+            <div class="form-group">
+              <label for="pageOrientation" class="form-label">Page Orientation</label>
+              <select id="pageOrientation" name="orientation" class="form-select">
+                <option value="auto" selected>Auto (Matches image dimensions)</option>
+                <option value="portrait">Portrait (A4 Vertical)</option>
+                <option value="landscape">Landscape (A4 Horizontal)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="pageMargin" class="form-label">Page Margins</label>
+              <select id="pageMargin" name="margin" class="form-select">
+                <option value="none" selected>No Margin (Full page bleed)</option>
+                <option value="small">Small Margin (Clean padding)</option>
+                <option value="big">Big Margin (Generous borders)</option>
+              </select>
+            </div>
+
+          {% elif tool.slug == 'rotate-pdf' %}
+            <div class="form-group">
+              <label for="rotateAngle" class="form-label">Rotation Angle</label>
+              <select id="rotateAngle" name="angle" class="form-select">
+                <option value="90" selected>90° Clockwise (Right)</option>
+                <option value="180">180° Upside Down</option>
+                <option value="270">270° / 90° Counter-Clockwise (Left)</option>
+              </select>
+            </div>
+
+          {% elif tool.slug == 'protect-pdf' %}
+            <div class="form-group">
+              <label for="pdfPassword" class="form-label">Set Document Password</label>
+              <input type="password" id="pdfPassword" name="password" class="form-input" placeholder="Enter a secure password" required>
+              <span class="form-hint">Standard AES-256 military-grade encryption will be applied.</span>
+            </div>
+
+          {% elif tool.slug == 'unlock-pdf' %}
+            <div class="form-group">
+              <label for="unlockPassword" class="form-label">Enter Current Password</label>
+              <input type="password" id="unlockPassword" name="password" class="form-input" placeholder="Document password" required>
+              <span class="form-hint">Provide the password to permanently strip encryption from this PDF.</span>
+            </div>
+
+          {% elif tool.slug == 'watermark-pdf' %}
+            <div class="form-group">
+              <label for="wmText" class="form-label">Watermark Text</label>
+              <input type="text" id="wmText" name="text" class="form-input" value="CONFIDENTIAL" required>
+            </div>
+
+            <div class="form-group">
+              <label for="wmPos" class="form-label">Watermark Position</label>
+              <select id="wmPos" name="position" class="form-select">
+                <option value="center" selected>Center Page</option>
+                <option value="diagonal">Diagonal Across Page</option>
+                <option value="top">Top Header</option>
+                <option value="bottom">Bottom Footer</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="wmOpacity" class="form-label">Opacity (Transparency)</label>
+              <input type="range" id="wmOpacity" name="opacity" min="0.1" max="0.9" step="0.05" value="0.35" class="form-input" oninput="document.getElementById('opacityVal').textContent = Math.round(this.value * 100) + '%'">
+              <span class="form-hint">Current: <span id="opacityVal">35%</span></span>
+            </div>
+
+            <div class="form-group">
+              <label for="wmColor" class="form-label">Watermark Color</label>
+              <input type="color" id="wmColor" name="color" value="#E11D48" class="form-input" style="height: 40px; padding: 2px;">
+            </div>
+
+          {% elif tool.slug == 'page-numbers' %}
+            <div class="form-group">
+              <label for="pnPosition" class="form-label">Page Number Position</label>
+              <select id="pnPosition" name="position" class="form-select">
+                <option value="bottom-center" selected>Bottom Center</option>
+                <option value="bottom-right">Bottom Right</option>
+                <option value="bottom-left">Bottom Left</option>
+                <option value="top-center">Top Center</option>
+                <option value="top-right">Top Right</option>
+                <option value="top-left">Top Left</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="pnFormat" class="form-label">Numbering Format</label>
+              <select id="pnFormat" name="format" class="form-select">
+                <option value="Page {n} of {total}" selected>Page {n} of {total}</option>
+                <option value="Page {n}">Page {n}</option>
+                <option value="{n}">{n}</option>
+                <option value="{n} / {total}">{n} / {total}</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="pnStart" class="form-label">First Page Number</label>
+              <input type="number" id="pnStart" name="start_num" value="1" min="1" class="form-input">
+            </div>
+
+          {% elif tool.slug == 'pdf-to-text' %}
+            <div class="form-group">
+              <span class="form-label">Text Extraction</span>
+              <p class="form-hint">Extracts all readable text content from the document and outputs a clean, searchable plain text (.txt) file.</p>
+            </div>
+          {% endif %}
+
+          <button type="button" class="btn-action-primary" id="actionBtn">
+            <span>{{ tool.action_btn }}</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Processing Modal -->
+  <div class="processing-modal" id="processingModal">
+    <div class="processing-card">
+      <div class="spinner"></div>
+      <h3 class="processing-title">Processing Document</h3>
+      <p class="processing-desc">Applying your changes with our high-speed engine. This usually takes just a few moments...</p>
+    </div>
+  </div>
+
+  <!-- Result Screen -->
+  <div class="result-screen" id="resultScreen">
+    <div class="success-icon-box">
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+        <polyline points="20 6 9 17 4 12"></polyline>
+      </svg>
+    </div>
+
+    <h2 class="result-title">Task Complete!</h2>
+    <p class="result-desc" id="resultMessage">Your PDF has been processed and is ready for download.</p>
+
+    <!-- Stats Box (for compression, text, etc.) -->
+    <div class="result-stats-card">
+      <div class="stat-item" id="compressionStats" style="display: none;">
+        <span class="stat-val" id="statSavingsPct">0%</span>
+        <span class="stat-lbl">Size Saved</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-val" id="statNewSize">--</span>
+        <span class="stat-lbl">Final File Size</span>
+      </div>
+    </div>
+
+    <!-- Text preview snippet if pdf-to-text -->
+    <div id="textSnippetBox" class="text-preview-box" style="display: none;"></div>
+
+    <div style="display: flex; flex-direction: column; align-items: center;">
+      <a href="#" id="resultDownloadBtn" class="btn-download-main">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        <span>Download File</span>
+      </a>
+
+      <div class="result-actions">
+        <button type="button" class="btn-secondary" onclick="window.toolInstance.resetTool()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 2v6h6M21.5 22v-6h-6"/><path d="M22 11.5A10 10 0 0 0 3.2 7.2M2 12.5a10 10 0 0 0 18.8 4.2"/></svg>
+          Process another file
+        </button>
+
+        <button type="button" class="btn-secondary" id="deleteNowBtn" style="color: var(--danger);">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+          Delete now
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Instantiate Tool Controller with current tool config
+  document.addEventListener('DOMContentLoaded', () => {
+    window.toolInstance = new ToolController({
+      slug: "{{ tool.slug }}",
+      title: "{{ tool.title }}",
+      multiple: {{ tool.multiple|yesno:"true,false" }},
+      accept: "{{ tool.accept }}"
+    });
+
+    // Segment option selection styling
+    document.querySelectorAll('.segment-option').forEach(opt => {
+      opt.addEventListener('click', () => {
+        const group = opt.closest('.segment-group');
+        if (group) {
+          group.querySelectorAll('.segment-option').forEach(o => o.classList.remove('selected'));
+          opt.classList.add('selected');
+        }
+      });
+    });
+  });
+
+  function toggleSplitInput(mode) {
+    const group = document.getElementById('rangeInputGroup');
+    if (group) {
+      group.style.display = (mode === 'range') ? 'flex' : 'none';
+    }
+  }
+</script>
+{% endblock %}

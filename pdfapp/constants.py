@@ -1,0 +1,167 @@
+# Tool definitions and configuration for PDFly
+
+TOOLS = [
+    {
+        'slug': 'merge-pdf',
+        'title': 'Merge PDF',
+        'short_desc': 'Combine multiple PDFs into one unified document.',
+        'desc': 'Combine PDFs in the order you want with the easiest PDF merger available. Drag and drop to reorder.',
+        'category': 'Organize',
+        'icon': 'merge',
+        'color': '#E11D48',
+        'badge': 'Popular',
+        'accept': '.pdf',
+        'multiple': True,
+        'action_btn': 'Merge PDF',
+        'help': 'Select 2 or more PDF files and arrange them in your desired order.'
+    },
+    {
+        'slug': 'split-pdf',
+        'title': 'Split PDF',
+        'short_desc': 'Separate one page or a whole set into independent files.',
+        'desc': 'Extract selected page ranges or separate all pages into individual high quality PDF documents.',
+        'category': 'Organize',
+        'icon': 'split',
+        'color': '#EA580C',
+        'accept': '.pdf',
+        'multiple': False,
+        'action_btn': 'Split PDF',
+        'help': 'Choose custom ranges (e.g., 1-4, 7, 9-12) or extract all pages.'
+    },
+    {
+        'slug': 'compress-pdf',
+        'title': 'Compress PDF',
+        'short_desc': 'Reduce PDF file size while maintaining maximum quality.',
+        'desc': 'Drastically reduce PDF file size with smart compression while keeping text crisp and images clear.',
+        'category': 'Optimize',
+        'icon': 'compress',
+        'color': '#16A34A',
+        'badge': 'Recommended',
+        'accept': '.pdf',
+        'multiple': False,
+        'action_btn': 'Compress PDF',
+        'help': 'Choose your compression ratio: Extreme, Recommended, or Light.'
+    },
+    {
+        'slug': 'organize-pdf',
+        'title': 'Organize PDF',
+        'short_desc': 'Reorder, rotate, or delete individual pages.',
+        'desc': 'Interactive page preview. Drag and drop pages to rearrange, remove unwanted pages, or rotate individual sheets.',
+        'category': 'Organize',
+        'icon': 'layers',
+        'color': '#0284C7',
+        'badge': 'Interactive',
+        'accept': '.pdf',
+        'multiple': False,
+        'action_btn': 'Save Organized PDF',
+        'help': 'Click pages to rotate or delete, and drag to change page order.'
+    },
+    {
+        'slug': 'pdf-to-jpg',
+        'title': 'PDF to JPG / PNG',
+        'short_desc': 'Convert each PDF page into high resolution images.',
+        'desc': 'Extract all pages into crystal clear JPG or PNG images. Download as individual images or a single ZIP archive.',
+        'category': 'Convert',
+        'icon': 'image',
+        'color': '#D97706',
+        'accept': '.pdf',
+        'multiple': False,
+        'action_btn': 'Convert to Images',
+        'help': 'Select output format and DPI resolution.'
+    },
+    {
+        'slug': 'jpg-to-pdf',
+        'title': 'JPG / Images to PDF',
+        'short_desc': 'Convert images into a clean, professional PDF.',
+        'desc': 'Convert JPG, PNG, WEBP, BMP images to PDF in seconds. Easily reorder and set page orientation and margins.',
+        'category': 'Convert',
+        'icon': 'file-plus',
+        'color': '#0D9488',
+        'accept': 'image/*',
+        'multiple': True,
+        'action_btn': 'Convert to PDF',
+        'help': 'Add one or more images and arrange them.'
+    },
+    {
+        'slug': 'rotate-pdf',
+        'title': 'Rotate PDF',
+        'short_desc': 'Rotate pages clockwise or counter-clockwise.',
+        'desc': 'Rotate your PDF pages 90°, 180°, or 270°. Rotate all pages at once with real-time visual orientation feedback.',
+        'category': 'Organize',
+        'icon': 'rotate-cw',
+        'color': '#9333EA',
+        'accept': '.pdf',
+        'multiple': False,
+        'action_btn': 'Rotate PDF',
+        'help': 'Choose rotation angle (90° Right, 180°, 90° Left).'
+    },
+    {
+        'slug': 'protect-pdf',
+        'title': 'Protect PDF',
+        'short_desc': 'Encrypt your PDF with a secure password.',
+        'desc': 'Protect PDF documents with robust encryption. Prevent unauthorized opening, copying, or modifying.',
+        'category': 'Security',
+        'icon': 'lock',
+        'color': '#4F46E5',
+        'badge': 'Security',
+        'accept': '.pdf',
+        'multiple': False,
+        'action_btn': 'Encrypt PDF',
+        'help': 'Set a password to lock and encrypt your PDF document.'
+    },
+    {
+        'slug': 'unlock-pdf',
+        'title': 'Unlock PDF',
+        'short_desc': 'Remove password security from protected PDFs.',
+        'desc': 'Decrypt protected PDF files and remove security restrictions so you can read, print, and edit freely.',
+        'category': 'Security',
+        'icon': 'unlock',
+        'color': '#6366F1',
+        'accept': '.pdf',
+        'multiple': False,
+        'action_btn': 'Unlock PDF',
+        'help': 'Enter the existing PDF password to remove protection permanently.'
+    },
+    {
+        'slug': 'watermark-pdf',
+        'title': 'Add Watermark',
+        'short_desc': 'Stamp custom text watermark over your PDF.',
+        'desc': 'Add professional copyright or confidential watermarks. Customize text, position, opacity, font size, and rotation.',
+        'category': 'Edit',
+        'icon': 'stamp',
+        'color': '#C026D3',
+        'accept': '.pdf',
+        'multiple': False,
+        'action_btn': 'Apply Watermark',
+        'help': 'Configure watermark text, opacity, angle, and position grid.'
+    },
+    {
+        'slug': 'page-numbers',
+        'title': 'Page Numbers',
+        'short_desc': 'Insert clean page numbers into your document.',
+        'desc': 'Add page numbers with precision. Select positions (bottom center, top right, etc.), formatting, and starting number.',
+        'category': 'Edit',
+        'icon': 'hash',
+        'color': '#2563EB',
+        'accept': '.pdf',
+        'multiple': False,
+        'action_btn': 'Add Page Numbers',
+        'help': 'Choose numbering format and page position.'
+    },
+    {
+        'slug': 'pdf-to-text',
+        'title': 'PDF to Text',
+        'short_desc': 'Extract all text content into a clean text file.',
+        'desc': 'Quickly extract text from all pages of your PDF document. View extracted text online or download as a .txt file.',
+        'category': 'Convert',
+        'icon': 'file-text',
+        'color': '#475569',
+        'accept': '.pdf',
+        'multiple': False,
+        'action_btn': 'Extract Text',
+        'help': 'Instantly extract clean, formatted text from every page.'
+    }
+]
+
+TOOLS_BY_SLUG = {tool['slug']: tool for tool in TOOLS}
+CATEGORIES = ['All', 'Organize', 'Optimize', 'Convert', 'Edit', 'Security']

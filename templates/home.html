@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}PDFly - Free & Modern Online PDF Tools{% endblock %}
+
+{% block content %}
+<div class="container">
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <h1 class="hero-title">Every tool you need to work with PDFs in one place</h1>
+    <p class="hero-subtitle">
+      Professional, lightning-fast, and secure tools to merge, split, compress, convert, rotate, unlock, and watermark PDFs.
+    </p>
+
+    <!-- Category Filter & Search Bar -->
+    <div class="filter-search-bar">
+      <div class="category-pills">
+        {% for cat in categories %}
+        <button type="button" class="category-pill {% if cat == 'All' %}active{% endif %}" data-category="{{ cat }}">
+          {{ cat }}
+        </button>
+        {% endfor %}
+      </div>
+
+      <div class="search-box">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text" id="toolSearchInput" class="search-input" placeholder="Search tools (e.g. merge, compress)..." aria-label="Search tools">
+      </div>
+    </div>
+  </section>
+
+  <!-- Tools Grid -->
+  <section class="tools-grid" id="toolsGrid">
+    {% for tool in tools %}
+    <a href="{% url 'pdfapp:tool' slug=tool.slug %}" class="tool-card" data-category="{{ tool.category }}" data-title="{{ tool.title }}" data-desc="{{ tool.desc }}">
+      <div class="tool-card-header">
+        <div class="tool-card-icon" style="background-color: {{ tool.color }}18; color: {{ tool.color }};">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            {% if tool.icon == 'merge' %}
+              <line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line>
+            {% elif tool.icon == 'split' %}
+              <circle cx="6" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><line x1="20" y1="4" x2="8.12" y2="15.88"></line><line x1="14.47" y1="14.48" x2="20" y2="20"></line><line x1="8.12" y1="8.12" x2="12" y2="12"></line>
+            {% elif tool.icon == 'compress' %}
+              <polyline points="4 14 10 14 10 20"></polyline><polyline points="20 10 14 10 14 4"></polyline><line x1="14" y1="10" x2="21" y2="3"></line><line x1="3" y1="21" x2="10" y2="14"></line>
+            {% elif tool.icon == 'layers' %}
+              <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline>
+            {% elif tool.icon == 'image' %}
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline>
+            {% elif tool.icon == 'file-plus' %}
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line>
+            {% elif tool.icon == 'rotate-cw' %}
+              <polyline points="23 4 23 10 17 10"></polyline><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+            {% elif tool.icon == 'lock' %}
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            {% elif tool.icon == 'unlock' %}
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 9.9-1"></path>
+            {% elif tool.icon == 'stamp' %}
+              <path d="M12 2v4M4.93 10.93l2.83-2.83M2 18h20M6 18v2a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-2M10 6h4a2 2 0 0 1 2 2v10H8V8a2 2 0 0 1 2-2z"></path>
+            {% elif tool.icon == 'hash' %}
+              <line x1="4" y1="9" x2="20" y2="9"></line><line x1="4" y1="15" x2="20" y2="15"></line><line x1="10" y1="3" x2="8" y2="21"></line><line x1="16" y1="3" x2="14" y2="21"></line>
+            {% elif tool.icon == 'file-text' %}
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline>
+            {% else %}
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline>
+            {% endif %}
+          </svg>
+        </div>
+        {% if tool.badge %}
+          <span class="tool-badge">{{ tool.badge }}</span>
+        {% endif %}
+      </div>
+
+      <h3 class="tool-card-title">{{ tool.title }}</h3>
+      <p class="tool-card-desc">{{ tool.short_desc }}</p>
+
+      <div class="tool-card-footer">
+        <span>Use Tool</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </div>
+    </a>
+    {% endfor %}
+  </section>
+
+  <!-- Feature Highlights -->
+  <section style="margin-bottom: 4.5rem; padding-top: 2rem; border-top: 1px solid var(--border-light);">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; text-align: center;">
+      <div style="padding: 1.5rem; background: var(--bg-surface); border: 1px solid var(--border-light); border-radius: var(--radius-lg);">
+        <div style="width: 48px; height: 48px; margin: 0 auto 1rem; border-radius: 50%; background: var(--brand-light); color: var(--brand-primary); display: flex; align-items: center; justify-content: center;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        </div>
+        <h4 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.4rem;">End-to-End Privacy</h4>
+        <p style="font-size: 0.875rem; color: var(--text-secondary);">Your documents are never shared or indexed. All uploaded and processed files are wiped automatically.</p>
+      </div>
+
+      <div style="padding: 1.5rem; background: var(--bg-surface); border: 1px solid var(--border-light); border-radius: var(--radius-lg);">
+        <div style="width: 48px; height: 48px; margin: 0 auto 1rem; border-radius: 50%; background: rgba(16, 185, 129, 0.15); color: var(--success); display: flex; align-items: center; justify-content: center;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+        </div>
+        <h4 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.4rem;">Native Processing Speed</h4>
+        <p style="font-size: 0.875rem; color: var(--text-secondary);">Powered by high-performance PyMuPDF C-extensions. Merges, splits, and compresses in fractions of a second.</p>
+      </div>
+
+      <div style="padding: 1.5rem; background: var(--bg-surface); border: 1px solid var(--border-light); border-radius: var(--radius-lg);">
+        <div style="width: 48px; height: 48px; margin: 0 auto 1rem; border-radius: 50%; background: rgba(2, 132, 199, 0.15); color: var(--info); display: flex; align-items: center; justify-content: center;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </div>
+        <h4 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 0.4rem;">Zero Setup Required</h4>
+        <p style="font-size: 0.875rem; color: var(--text-secondary);">Drag and drop your files right from your browser without creating an account or paying for subscriptions.</p>
+      </div>
+    </div>
+  </section>
+</div>
+{% endblock %}

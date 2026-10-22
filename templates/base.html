@@ -1,0 +1,149 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}PDFly - Modern PDF Tools & Utilities{% endblock %}</title>
+  <meta name="description" content="{% block meta_desc %}Free online PDF tools to merge, split, compress, convert, rotate, unlock, and watermark PDFs with 100% privacy and lightning speed.{% endblock %}">
+
+  <!-- Google Fonts: Inter & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="{% static 'img/favicon.png' %}">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="{% static 'css/main.css' %}">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+  <!-- CSRF Token helper -->
+  {% csrf_token %}
+
+  <!-- Navigation Bar -->
+  <header class="site-header">
+    <div class="container nav-wrapper">
+      <a href="{% url 'pdfapp:index' %}" class="brand-logo" aria-label="PDFly Homepage">
+        <img src="{% static 'img/logo_icon.png' %}" alt="PDFly Logo" class="brand-logo-img">
+        <span>PDF<span class="brand-highlight">ly</span></span>
+      </a>
+
+      <nav class="nav-links">
+        <a href="{% url 'pdfapp:tool' slug='merge-pdf' %}" class="nav-link">Merge</a>
+        <a href="{% url 'pdfapp:tool' slug='split-pdf' %}" class="nav-link">Split</a>
+        <a href="{% url 'pdfapp:tool' slug='compress-pdf' %}" class="nav-link">Compress</a>
+        <a href="{% url 'pdfapp:tool' slug='pdf-to-jpg' %}" class="nav-link">Convert</a>
+        
+        <!-- All Tools Mega Dropdown -->
+        <div class="dropdown-parent">
+          <a href="#" class="nav-link" onclick="event.preventDefault()">
+            All Tools
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </a>
+          <div class="dropdown-menu">
+            {% for t in ALL_TOOLS %}
+            <a href="{% url 'pdfapp:tool' slug=t.slug %}" class="dropdown-item">
+              <div class="dropdown-item-icon" style="color: {{ t.color }};">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  {% if t.icon == 'merge' %}
+                    <line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line>
+                  {% elif t.icon == 'split' %}
+                    <circle cx="6" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><line x1="20" y1="4" x2="8.12" y2="15.88"></line><line x1="14.47" y1="14.48" x2="20" y2="20"></line><line x1="8.12" y1="8.12" x2="12" y2="12"></line>
+                  {% elif t.icon == 'compress' %}
+                    <polyline points="4 14 10 14 10 20"></polyline><polyline points="20 10 14 10 14 4"></polyline><line x1="14" y1="10" x2="21" y2="3"></line><line x1="3" y1="21" x2="10" y2="14"></line>
+                  {% elif t.icon == 'lock' %}
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                  {% else %}
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline>
+                  {% endif %}
+                </svg>
+              </div>
+              <div>
+                <div class="dropdown-item-title">{{ t.title }}</div>
+              </div>
+            </a>
+            {% endfor %}
+          </div>
+        </div>
+      </nav>
+
+      <div class="nav-actions">
+        <!-- Theme Toggle -->
+        <button type="button" class="btn-icon" onclick="toggleTheme()" aria-label="Toggle Dark/Light Mode" title="Toggle Dark/Light Mode">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="theme-icon-sun">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Body -->
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <a href="{% url 'pdfapp:index' %}" class="brand-logo" style="margin-bottom: 0.5rem;">
+            <img src="{% static 'img/logo_icon.png' %}" alt="PDFly Logo" class="brand-logo-img" style="height: 34px;">
+            <span>PDF<span class="brand-highlight">ly</span></span>
+          </a>
+          <p>Every tool you need to use PDFs, entirely at your fingertips. All 100% secure, private, and fast.</p>
+        </div>
+
+        <div class="footer-col">
+          <h4>Organize</h4>
+          <ul class="footer-links">
+            <li><a href="{% url 'pdfapp:tool' slug='merge-pdf' %}">Merge PDF</a></li>
+            <li><a href="{% url 'pdfapp:tool' slug='split-pdf' %}">Split PDF</a></li>
+            <li><a href="{% url 'pdfapp:tool' slug='organize-pdf' %}">Organize PDF</a></li>
+            <li><a href="{% url 'pdfapp:tool' slug='rotate-pdf' %}">Rotate PDF</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Optimize & Convert</h4>
+          <ul class="footer-links">
+            <li><a href="{% url 'pdfapp:tool' slug='compress-pdf' %}">Compress PDF</a></li>
+            <li><a href="{% url 'pdfapp:tool' slug='pdf-to-jpg' %}">PDF to JPG</a></li>
+            <li><a href="{% url 'pdfapp:tool' slug='jpg-to-pdf' %}">JPG to PDF</a></li>
+            <li><a href="{% url 'pdfapp:tool' slug='pdf-to-text' %}">PDF to Text</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Security & Edit</h4>
+          <ul class="footer-links">
+            <li><a href="{% url 'pdfapp:tool' slug='protect-pdf' %}">Protect PDF</a></li>
+            <li><a href="{% url 'pdfapp:tool' slug='unlock-pdf' %}">Unlock PDF</a></li>
+            <li><a href="{% url 'pdfapp:tool' slug='watermark-pdf' %}">Add Watermark</a></li>
+            <li><a href="{% url 'pdfapp:tool' slug='page-numbers' %}">Page Numbers</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>© 2026 PDFly. Powered by Django. Built for high performance & privacy.</div>
+        <div style="display:flex; gap:1.5rem;">
+          <span>Files automatically purged after processing</span>
+          <span>Zero telemetry</span>
+        </div>
+      </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="{% static 'js/app.js' %}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>
