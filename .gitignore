@@ -16,6 +16,7 @@ media/*
 samples/
 *.pdf
 *.txt
+!requirements.txt
 *.zip
 !static/
 

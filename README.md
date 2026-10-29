@@ -39,17 +39,31 @@ The application provides a complete suite of 12 PDF manipulation tools:
 
 ## 🚀 How to Run Locally
 
-### 1. Install Dependencies
+### ⚡ One-Click Run (Fastest)
+
+- **Windows:** Double-click [`run.bat`](file:///c:/Users/vishn/OneDrive/Desktop/PDFly/run.bat) (or run `run.bat` in CMD / PowerShell).
+- **Linux / macOS:** Execute `./run.sh` in your terminal:
+  ```bash
+  chmod +x run.sh
+  ./run.sh
+  ```
+*Both scripts automatically check Python, activate virtual environments, install dependencies if missing, run migrations, launch the server, and open `http://127.0.0.1:8000` in your default browser.*
+
+---
+
+### 🛠️ Manual Setup
+
+#### 1. Install Dependencies
 ```bash
-python -m pip install django pypdf pymupdf reportlab pillow requests
+python -m pip install -r requirements.txt
 ```
 
-### 2. Run Database Migrations
+#### 2. Run Database Migrations
 ```bash
 python manage.py migrate
 ```
 
-### 3. Start Development Server
+#### 3. Start Development Server
 ```bash
 python manage.py runserver 127.0.0.1:8000
 ```
